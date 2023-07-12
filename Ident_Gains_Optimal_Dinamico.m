@@ -46,8 +46,8 @@ ms = MultiStart('FunctionTolerance',2e-4,'UseParallel',true,'Display','iter', 'M
 % INITIAL VALUES
 chi = ones(16,1);  
 f_obj1 = @(x)  funcion_costo_Ident_Gain_Dinamica(x, hd_p, hd, N, ts, chi_real); 
-vc_min = -5;
-vc_max = 5;
+vc_min = -1.5;
+vc_max = 1.5;
 Delta_hd_p_min = -0.001;
 Delta_hd_p_max = 0.001;
 problem = createOptimProblem('fmincon','objective',f_obj1,'x0',chi,...
@@ -90,7 +90,7 @@ luz.Style = 'infinite';
 %b) Dimenciones del Robot
 Drone_Parameters(0.02);
 %c) Dibujo del Robot
-G2=Drone_Plot_3D(q_estimate(1,1),q_estimate(2,1),q_estimate(3,1),q_estimate(4,1), q_estimate(5,1), q_estimate(6,1));hold on
+%G2=Drone_Plot_3D(q_estimate(1,1),q_estimate(2,1),q_estimate(3,1),q_estimate(4,1), q_estimate(5,1), q_estimate(6,1));hold on
 
 %plot3(H(1,1),H(2,1),H(3,11),'--','Color',[56,171,217]/255,'linewidth',1.5);hold on,grid on
 
