@@ -16,11 +16,11 @@ x = [h;v];
 H = [h;v];
 
 %% Variables definidas por la TRAYECTORIA y VELOCIDADES deseadas
-[hxd, hyd, hzd, hpsid, hxdp, hydp, hzdp, hpsidp] = Trayectorias(3,t,5);
+[hxd, hyd, hzd, hpsid, ul_d, um_d, un_d, r_d] = Trayectorias(3,t,5);
 
 %% GENERALIZED DESIRED SIGNALS
 %hd = [hxd; hyd; hzd; hpsid];
-hd = [hxd;hyd;hzd;0*hpsid;hxdp; hydp; hzdp; 0*hpsidp];
+hd = [hxd;hyd;hzd;0*hpsid; ul_d; um_d; un_d; 0*r_d];
 %hdp = [hxdp;hydp;hzdp;hpsidp];
 
 %% Definicion de los limites de las acciondes de control
@@ -32,13 +32,13 @@ H0 = repmat(H,1,N+1)';
 x_N = H0;
 
 % Definicion del optimizador
-[f, solver, args] = mpc_drone_simple_gains(chi_uav,bounded, N, L, ts, chi);
+[f, solver, args] = mpc_drone_S_simple_gains(chi_uav,bounded, N, L, ts, chi);
 
 tic
 for k=1:length(t)-N
 
     %% Generacion del; vector de error del sistema
-
+    he(:,k)=hd(1:4,k)-h(:,k);
      
     [u_opt,x_opt] = SolverUAV_MPC_din_gains(h,v,hd,N,x_N,v_N,args,solver,k);
       
