@@ -2,60 +2,59 @@
 
 clc; clear all; close all; warning off % Inicializacion
  
-ts = 1/10;       % Tiempo de muestreo
-tfin = 20;      % Tiempo de simulación
-t = 0:ts:tfin;
-N = length(t);
+load("chi_values.mat");
+chi_real = chi';
 
-%% Condiciones Iniciales
-h(:,1) = [0;0;3;0];
-h_p(:,1) = [0;0;0;0];
+%% DEFINITION OF TIME VARIABLES
+f = 30 % Hz 
+ts = 1/f;
+to = 0;
+tf = 15;
+t = (to:ts:tf);
 
-%% Variables definidas por la TRAYECTORIA y VELOCIDADES deseadas
-[xd, yd, zd, psid, xdp, ydp, zdp, psidp] = Trayectorias(3,t,1);
-                                                      
-hd = [xd;yd;zd;psid];    
-hd_p = [xdp;ydp;zdp;psidp]; 
+%% Definicion del horizonte de prediccion
+N = 10; %20 
                                                       
 disp('Empieza el programa')
-
-%% Parametros del optimizador
-% options = optimset('Display','iter',...
-%                 'TolFun', 1e-8,...
-%                 'MaxIter', 10000,...
-%                 'Algorithm', 'active-set',...
-%                 'FinDiffType', 'forward',...
-%                 'RelLineSrchBnd', [],...
-%                 'RelLineSrchBndDuration', 1,...
-%                 'TolConSQP', 1e-6); 
-% x0=zeros(8,1);           
-% f_obj1 = @(x)  funcion_costo_Ident_Gain(x, hd_p, hd, N, ts);
-% x = fmincon(f_obj1,x0,[],[],[],[],[],[],[],options);
-% values_final = x;
 
 %%
 % OPTIMIZATION PARAMETERS IDENTIFICATION
 options = optimoptions(@fmincon, 'Algorithm','interior-point'); 
 options.MaxFunctionEvaluations = 10000;   
 rng default;
-ms = MultiStart('FunctionTolerance',2e-4,'UseParallel',true,'Display','iter', 'MaxTime', 300);
+ms = MultiStart('FunctionTolerance',2e-4,'UseParallel',true,'Display','iter', 'MaxTime', 600);
 
 % INITIAL VALUES
 chi = ones(8,1);  
-f_obj1 = @(x)  funcion_costo_Ident_Gain(x, hd_p, hd, N, ts); 
-vc_min = -3;
-vc_max = 3;
+
+chi = [27.0227;
+39.3410 ;
+50.2413;
+7.2999;
+1.1704 ;
+1.4417 ;
+1.0992 ;
+33.7032]
+
+f_obj1 = @(gains)  funcion_costo_Ident_Gain_MPC(gains, t, ts, N, chi_real); 
+vc_min = -5.0;
+vc_max = 5;
 Delta_hd_p_min = -0.001;
 Delta_hd_p_max = 0.001;
+% problem = createOptimProblem('fmincon','objective',f_obj1,'x0',chi,...
+%                              'lb',1*[ones(8,1)],'ub',[],...
+%                              'nonlcon',{@(u)vc_constraint(u,vc_min,vc_max)},...
+%                              'options',options);
+%                          
 problem = createOptimProblem('fmincon','objective',f_obj1,'x0',chi,...
                              'lb',[],'ub',[],...
-                             'nonlcon',{@(vc)vc_constraint(vc,vc_min,vc_max)},...
+                             'nonlcon',{},...
                              'options',options);
 
 gs = GlobalSearch(ms);
 [x, f] = run(gs, problem);
 values_final = x;
-
+X = values_final'
 
 
 %%
@@ -87,7 +86,7 @@ luz.Style = 'infinite';
 %b) Dimenciones del Robot
 Drone_Parameters(0.02);
 %c) Dibujo del Robot
-G2=Drone_Plot_3D(q_estimate(1,1),q_estimate(2,1),q_estimate(3,1),q_estimate(4,1), q_estimate(5,1), q_estimate(6,1));hold on
+%G2=Drone_Plot_3D(q_estimate(1,1),q_estimate(2,1),q_estimate(3,1),q_estimate(4,1), q_estimate(5,1), q_estimate(6,1));hold on
 
 %plot3(H(1,1),H(2,1),H(3,11),'--','Color',[56,171,217]/255,'linewidth',1.5);hold on,grid on
 

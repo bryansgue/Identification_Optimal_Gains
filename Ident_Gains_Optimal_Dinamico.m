@@ -15,7 +15,7 @@ h(:,1) = [0;0;1;0];
 h_p(:,1) = [0;0;0;0];
 
 %% Variables definidas por la TRAYECTORIA y VELOCIDADES deseadas
-[xd, yd, zd, psid, xdp, ydp, zdp, psidp] = Trayectorias(3,t);
+[xd, yd, zd, psid, xdp, ydp, zdp, psidp] = Trayectorias(3,t,1);
                                                       
 hd = [xd;yd;zd;psid];    
 hd_p = [xdp;ydp;zdp;psidp]; 
@@ -46,8 +46,8 @@ ms = MultiStart('FunctionTolerance',2e-4,'UseParallel',true,'Display','iter', 'M
 % INITIAL VALUES
 chi = ones(16,1);  
 f_obj1 = @(x)  funcion_costo_Ident_Gain_Dinamica(x, hd_p, hd, N, ts, chi_real); 
-vc_min = -1.5;
-vc_max = 1.5;
+vc_min = -5.5;
+vc_max = 5.5;
 Delta_hd_p_min = -0.001;
 Delta_hd_p_max = 0.001;
 problem = createOptimProblem('fmincon','objective',f_obj1,'x0',chi,...

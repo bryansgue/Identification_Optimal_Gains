@@ -1,7 +1,6 @@
-function [xd, yd, zd, psid, xd_p, yd_p, zd_p, psid_p] = Trayectorias(n,t)
-%%
-mul=6;
-%%
+function [xd, yd, zd, psid, xd_p, yd_p, zd_p, psid_p] = Trayectorias(n,t,mul)
+
+
 % 2) Seleccion de trayectoria deseada (POSICIÓN y VELOCIDADES)
      switch n
    % a)Trayectoria Churo     
@@ -22,17 +21,14 @@ mul=6;
             zd= 2 * ones(1,length(t)) +4;     zd_p= 0 * ones(1,length(t)); 
    % c) Trayectoria de un 8 
         case 3
-            %%
             Q = 0.2;
             xd = 4 * sin(mul*0.04*t)+3;         xd_p = 4*mul*0.04*cos(mul*0.04*t);     xd_pp = -4*mul*mul*0.04*0.04*sin(mul*0.04*t);
             yd = 4 * sin(mul*0.08*t);         yd_p = 4*mul*0.08*cos(mul*0.08*t);     yd_pp = -4*mul*mul*0.08*0.08*sin(mul*0.08*t);               
-            zd = 1.5 * sin (Q * t) +10 ;             zd_p =1.5* Q*cos(Q*t);
-
+            zd = 2.5 * sin (Q * t) +5 ;             zd_p = Q*cos(Q*t);
    % d) Trayectoria Silla de Montar
         case 4  
-            m = 0.25;
             xd= 5 * cos(0.05*t) + 5;                xd_p=-0.25*sin(0.05*t);           xd_pp=-0.0125*cos(0.05*t);
-            yd=m* 5 * sin (0.05 * t) ;              yd_p=m*0.25*cos(0.05*t);          yd_pp=m*-0.0125*sin(0.05*t);
+            yd= 5 * sin (0.05 * t) ;                yd_p=0.25*cos(0.05*t);            yd_pp=-0.0125*sin(0.05*t);
             zd= 1 * sin (0.3 * t) +18 ;             zd_p=0.3*cos(0.3*t);              %zd_pp=-0.09*sin(0.3*t);
    % e) Otra opcion
         otherwise
@@ -40,8 +36,7 @@ mul=6;
      end
 
 % 3) Cálculo de orientación 
-     psid= atan2(yd_p,xd_p);
-    
+     psid= (atan2(yd_p,xd_p));
      psid_p = (1./((yd_p./xd_p).^2+1)).*((yd_pp.*xd_p-yd_p.*xd_pp)./xd_p.^2);
      psid_p(1)=0;
 end
