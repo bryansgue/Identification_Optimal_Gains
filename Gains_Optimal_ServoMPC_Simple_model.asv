@@ -63,7 +63,5 @@ f_obj1 = @(gains)  funcion_costo_S_simple_MPC(gains, t, ts, N, chi_uav);
                             
 chi = fmincon(f_obj1,x0,[],[],[],[],[],[],[],options);
 
-%%
 
-save("chi_servo.mat","chi");
 
