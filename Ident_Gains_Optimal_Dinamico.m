@@ -2,20 +2,35 @@
 
 clc; clear all; close all; warning off % Inicializacion
  
-ts = 1/10;       % Tiempo de muestreo
-tfin = 20;      % Tiempo de simulación
+ts = 1/30;       % Tiempo de muestreo
+tfin = 30;      % Tiempo de simulación
 t = 0:ts:tfin;
 N = length(t);
 
-load("chi_values.mat");
-chi_real(:,1) = chi';
+load("chi_simple.mat");
+chi_uavl(:,1) = chi';
 
 %% Condiciones Iniciales
 h(:,1) = [0;0;1;0];
 h_p(:,1) = [0;0;0;0];
 
 %% Variables definidas por la TRAYECTORIA y VELOCIDADES deseadas
-[xd, yd, zd, psid, xdp, ydp, zdp, psidp] = Trayectorias(3,t,1);
+%[xd, yd, zd, psid, xdp, ydp, zdp, psidp] = Trayectorias(3,t,1);
+                                                      
+value = 9;
+
+xd = 4 * sin(value * 0.04 * t) + 3;
+yd = 4 * sin(value * 0.08 * t);
+zd = 2 * sin(value * 0.08 * t) + 6;
+
+xdp = 4 * value * 0.04 * cos(value * 0.04 * t);
+ydp = 4 * value * 0.08 * cos(value * 0.08 * t);
+zdp = 2 * value * 0.08 * cos(value * 0.08 * t);
+
+% 3) Cálculo de orientación 
+psid= (atan2(ydp,xdp));
+psidp = 0 *psid;
+psidp(1)=0;
                                                       
 hd = [xd;yd;zd;psid];    
 hd_p = [xdp;ydp;zdp;psidp]; 
@@ -44,16 +59,18 @@ rng default;
 ms = MultiStart('FunctionTolerance',2e-4,'UseParallel',true,'Display','iter', 'MaxTime', 600);
 
 % INITIAL VALUES
-chi = ones(16,1);  
-f_obj1 = @(x)  funcion_costo_Ident_Gain_Dinamica(x, hd_p, hd, N, ts, chi_real); 
-vc_min = -5.5;
-vc_max = 5.5;
-Delta_hd_p_min = -0.001;
-Delta_hd_p_max = 0.001;
-problem = createOptimProblem('fmincon','objective',f_obj1,'x0',chi,...
-                             'lb',1*[ones(16,1)],'ub',[],...
-                             'nonlcon',{@(u)vc_constraint(u,vc_min,vc_max)},...
-                             'options',options);
+chi = 1*ones(16,1).*rand(16,1);  
+f_obj1 = @(x)  funcion_costo_Ident_Gain_Dinamica(x, hd_p, hd, N, ts, chi_uavl); 
+vc_min = -4;
+vc_max = 4;
+
+lb = zeros(size(chi)); % Límites inferiores, en este caso, todos cero
+ub = []; % Límites superiores (dejar en blanco para no tener límite superior)
+
+% Crea el problema de optimización
+problem = createOptimProblem('fmincon', 'objective', f_obj1, 'x0', chi, 'lb', lb, 'ub', ub, ...
+    'nonlcon', {@(u) vc_constraint(u, vc_min, vc_max)}, 'options', options);
+
 
 gs = GlobalSearch(ms);
 [x, f] = run(gs, problem);

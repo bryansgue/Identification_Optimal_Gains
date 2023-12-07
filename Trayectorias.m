@@ -21,10 +21,10 @@ function [xd, yd, zd, psid, xd_p, yd_p, zd_p, psid_p] = Trayectorias(n,t,mul)
             zd= 2 * ones(1,length(t)) +4;     zd_p= 0 * ones(1,length(t)); 
    % c) Trayectoria de un 8 
         case 3
-            Q = 0.2;
-            xd = 4 * sin(mul*0.04*t)+3;         xd_p = 4*mul*0.04*cos(mul*0.04*t);     xd_pp = -4*mul*mul*0.04*0.04*sin(mul*0.04*t);
-            yd = 4 * sin(mul*0.08*t);         yd_p = 4*mul*0.08*cos(mul*0.08*t);     yd_pp = -4*mul*mul*0.08*0.08*sin(mul*0.08*t);               
-            zd = 2.5 * sin (Q * t) +5 ;             zd_p = Q*cos(Q*t);
+            
+            xd = 4 * sin(5*0.04*t) + 3;         xd_p = 4 * 5 * 0.04 * cos(5*0.04*t);     xd_pp = -4 * 5 * 0.04 * 5*0.04 * sin(5*0.04*t);
+            yd = 4 * sin(5*0.08*t);              yd_p = 4 * 5 * 0.08 * cos(5*0.08*t);     yd_pp = -4 * 5 * 0.08 *5*0.08* sin(5*0.08*t);               
+            zd = 2 * sin(5*0.08*t) + 5;             zd_p =2 * 5 * 0.08 * cos(5*0.08*t);
    % d) Trayectoria Silla de Montar
         case 4  
             xd= 5 * cos(0.05*t) + 5;                xd_p=-0.25*sin(0.05*t);           xd_pp=-0.0125*cos(0.05*t);

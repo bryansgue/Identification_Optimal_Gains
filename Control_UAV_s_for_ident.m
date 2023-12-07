@@ -64,7 +64,7 @@ K2(4,4) = X(8);
 
 
 % 7) Ley de control completa,  solucion = [u omega qpunto1 qpunto2]    
- VMref = pinv(J)*(hd_p +K1*tanh(K2*he));
+ VMref = pinv(J)*(hd_p +K2*tanh(inv(K2)*K1*he));
 %    VMref = pinv(J)*(K1*tanh(K2*he'));
   
 end
